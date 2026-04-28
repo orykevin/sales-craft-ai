@@ -1,16 +1,39 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// The schema is entirely optional.
-// You can delete this file (schema.ts) and the
-// app will continue to work.
-// The schema provides more precise TypeScript types.
 export default defineSchema({
-  todos: defineTable({
-    text: v.string(),
-    completed: v.boolean(),
+  salesPages: defineTable({
     userId: v.string(),
+    // Input fields
+    productName: v.string(),
+    productDescription: v.string(),
+    keyFeatures: v.array(v.string()),
+    targetAudience: v.string(),
+    price: v.string(),
+    uniqueSellingPoints: v.optional(v.string()),
+    // Generated content (structured JSON)
+    generatedContent: v.optional(
+      v.object({
+        headline: v.string(),
+        subHeadline: v.string(),
+        productDescription: v.string(),
+        benefits: v.array(
+          v.object({ title: v.string(), description: v.string() }),
+        ),
+        features: v.array(
+          v.object({ title: v.string(), description: v.string() }),
+        ),
+        socialProof: v.string(),
+        pricingDisplay: v.string(),
+        callToAction: v.string(),
+      }),
+    ),
+    templateStyle: v.string(), // "editorial", "minimal", "bold"
+    status: v.string(), // "generating", "ready", "error"
+    errorMessage: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("userId", ["userId"]),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_and_createdAt", ["userId", "createdAt"]),
 });

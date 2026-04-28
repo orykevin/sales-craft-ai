@@ -5,7 +5,9 @@
 
 @theme {
   --color-light: #ffffff;
-  --color-dark: #171717;
+  --color-dark: #0a0a0a;
+  --font-family-display: "Playfair Display", Georgia, serif;
+  --font-family-body: "Inter", system-ui, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
