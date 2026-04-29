@@ -160,7 +160,9 @@ export default function SalesPages() {
                   {page.templateStyle}
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-neutral-800/80 text-neutral-400 text-xs">
-                  {page.price}
+                  {page.price.length > 1
+                    ? `${page.price[0]} + ${page.price.length - 1} more`
+                    : page.price[0] || "No price"}
                 </span>
               </div>
 
@@ -206,7 +208,8 @@ export default function SalesPages() {
 
 function generateExportHTML(page: {
   productName: string;
-  price: string;
+  price: string[];
+  targetAudience: string[];
   generatedContent: {
     headline: string;
     subHeadline: string;
@@ -261,7 +264,17 @@ function generateExportHTML(page: {
     <div class="grid">${c.features.map((f) => `<div class="card"><h3>${f.title}</h3><p>${f.description}</p></div>`).join("")}</div>
   </section>
   <section><p class="quote">"${c.socialProof}"</p></section>
-  <section><p class="pricing">${c.pricingDisplay}</p></section>
+  <section>
+    <p class="pricing">${c.pricingDisplay}</p>
+    <div style="margin-top: 2rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem;">
+      ${page.price.map((p, i) => `
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          ${page.targetAudience[i] ? `<span style="font-size: 0.875rem; color: #a3a3a3; margin-bottom: 0.5rem;">${page.targetAudience[i]}</span>` : ""}
+          <span style="font-size: 2.5rem; font-weight: 700; color: #f59e0b;">${p}</span>
+        </div>
+      `).join("")}
+    </div>
+  </section>
   <div class="final-cta">
     <a href="#" class="cta-btn">${c.callToAction}</a>
   </div>

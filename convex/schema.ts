@@ -8,8 +8,8 @@ export default defineSchema({
     productName: v.string(),
     productDescription: v.string(),
     keyFeatures: v.array(v.string()),
-    targetAudience: v.string(),
-    price: v.string(),
+    targetAudience: v.array(v.string()),
+    price: v.array(v.string()),
     uniqueSellingPoints: v.optional(v.string()),
     // Generated content (structured JSON)
     generatedContent: v.optional(
@@ -25,6 +25,14 @@ export default defineSchema({
         ),
         socialProof: v.string(),
         pricingDisplay: v.string(),
+        pricingPlans: v.array(
+          v.object({
+            name: v.string(),
+            price: v.string(),
+            description: v.string(),
+            features: v.array(v.string()),
+          }),
+        ),
         callToAction: v.string(),
       }),
     ),

@@ -45,8 +45,8 @@ export default function CreateSalesPage() {
     productName: "",
     productDescription: "",
     keyFeatures: [""],
-    targetAudience: "",
-    price: "",
+    targetAudience: [""],
+    price: [""],
     uniqueSellingPoints: "",
     templateStyle: "editorial",
   });
@@ -73,6 +73,22 @@ export default function CreateSalesPage() {
     }));
   };
 
+  const addGroup = () => {
+    setFormData((prev) => ({
+      ...prev,
+      targetAudience: [...prev.targetAudience, ""],
+      price: [...prev.price, ""],
+    }));
+  };
+
+  const removeGroup = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      targetAudience: prev.targetAudience.filter((_, i) => i !== index),
+      price: prev.price.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -80,14 +96,20 @@ export default function CreateSalesPage() {
     const features = formData.keyFeatures.filter((f) => f.trim() !== "");
     if (features.length === 0) return;
 
+    const audiences = formData.targetAudience.filter((a) => a.trim() !== "");
+    if (audiences.length === 0) return;
+
+    const prices = formData.price.filter((p) => p.trim() !== "");
+    if (prices.length === 0) return;
+
     setLoading(true);
     try {
       const pageId = await createPage({
         productName: formData.productName,
         productDescription: formData.productDescription,
         keyFeatures: features,
-        targetAudience: formData.targetAudience,
-        price: formData.price,
+        targetAudience: audiences,
+        price: prices,
         uniqueSellingPoints: formData.uniqueSellingPoints || undefined,
         templateStyle: formData.templateStyle,
       });
@@ -192,40 +214,63 @@ export default function CreateSalesPage() {
           </div>
         </div>
 
-        {/* Target Audience & Price */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-neutral-300">
-              Target Audience <span className="text-amber-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.targetAudience}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  targetAudience: e.target.value,
-                }))
-              }
-              placeholder="e.g., SaaS founders & marketers"
-              className="w-full px-4 py-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all"
-            />
+        {/* Target Audience & Price — grouped rows */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-neutral-300">
+              Target Audience &amp; Price <span className="text-amber-500">*</span>
+            </span>
           </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-neutral-300">
-              Price <span className="text-amber-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.price}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, price: e.target.value }))
-              }
-              placeholder="e.g., $49/month"
-              className="w-full px-4 py-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all"
-            />
+          <div className="space-y-3">
+            {formData.targetAudience.map((audience, index) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  type="text"
+                  value={audience}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      targetAudience: prev.targetAudience.map((a, i) =>
+                        i === index ? e.target.value : a
+                      ),
+                    }))
+                  }
+                  placeholder={`Audience ${index + 1} — e.g. SaaS founders`}
+                  className="flex-1 px-4 py-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                />
+                <input
+                  type="text"
+                  value={formData.price[index] ?? ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      price: prev.price.map((p, i) =>
+                        i === index ? e.target.value : p
+                      ),
+                    }))
+                  }
+                  placeholder="Price — e.g. $49/mo"
+                  className="w-36 px-4 py-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all"
+                />
+                {formData.targetAudience.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeGroup(index)}
+                    className="p-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 text-neutral-500 hover:text-red-400 hover:border-red-500/30 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addGroup}
+              className="inline-flex items-center gap-1.5 text-sm text-amber-500/70 hover:text-amber-400 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add audience &amp; price
+            </button>
           </div>
         </div>
 
@@ -267,10 +312,9 @@ export default function CreateSalesPage() {
                 }
                 className={`
                   relative p-5 rounded-2xl border text-left transition-all duration-200
-                  ${
-                    formData.templateStyle === template.id
-                      ? `bg-gradient-to-br ${template.gradient} ${template.accent} shadow-lg`
-                      : "bg-neutral-900/30 border-neutral-800/50 hover:border-neutral-700"
+                  ${formData.templateStyle === template.id
+                    ? `bg-gradient-to-br ${template.gradient} ${template.accent} shadow-lg`
+                    : "bg-neutral-900/30 border-neutral-800/50 hover:border-neutral-700"
                   }
                 `}
               >

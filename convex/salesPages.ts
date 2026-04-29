@@ -27,6 +27,14 @@ const generatedContentValidator = v.object({
   features: v.array(v.object({ title: v.string(), description: v.string() })),
   socialProof: v.string(),
   pricingDisplay: v.string(),
+  pricingPlans: v.array(
+    v.object({
+      name: v.string(),
+      price: v.string(),
+      description: v.string(),
+      features: v.array(v.string()),
+    }),
+  ),
   callToAction: v.string(),
 });
 
@@ -73,8 +81,8 @@ export const create = mutation({
     productName: v.string(),
     productDescription: v.string(),
     keyFeatures: v.array(v.string()),
-    targetAudience: v.string(),
-    price: v.string(),
+    targetAudience: v.array(v.string()),
+    price: v.array(v.string()),
     uniqueSellingPoints: v.optional(v.string()),
     templateStyle: v.string(),
   },
@@ -169,6 +177,24 @@ export const updateTemplateStyle = mutation({
     }
     await ctx.db.patch(args.id, {
       templateStyle: args.templateStyle,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const updateContent = mutation({
+  args: {
+    id: v.id("salesPages"),
+    generatedContent: generatedContentValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserIdOrThrow(ctx);
+    const page = await ctx.db.get(args.id);
+    if (!page || page.userId !== userId) {
+      throw new Error("Page not found or unauthorized");
+    }
+    await ctx.db.patch(args.id, {
+      generatedContent: args.generatedContent,
       updatedAt: Date.now(),
     });
   },

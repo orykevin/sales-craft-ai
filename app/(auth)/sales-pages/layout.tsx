@@ -63,9 +63,6 @@ export default function SalesPagesLayout({
               <h1 className="text-lg font-semibold tracking-tight font-display">
                 SalesCraft
               </h1>
-              <p className="text-[11px] text-amber-500/70 uppercase tracking-[0.2em]">
-                AI Studio
-              </p>
             </div>
           </Link>
         </div>
@@ -85,10 +82,9 @@ export default function SalesPagesLayout({
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
                   transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-amber-500/10 text-amber-400 shadow-sm shadow-amber-500/5"
-                      : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50"
+                  ${isActive
+                    ? "bg-amber-500/10 text-amber-400 shadow-sm shadow-amber-500/5"
+                    : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50"
                   }
                 `}
               >

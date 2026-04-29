@@ -51,8 +51,18 @@ const salesPageSchema = z.object({
   pricingDisplay: z
     .string()
     .describe(
-      "Pricing text that presents the value proposition alongside the price",
+      "A brief introductory text for the pricing section (1 sentence)",
     ),
+  pricingPlans: z
+    .array(
+      z.object({
+        name: z.string().describe("Name of the plan (e.g., 'Starter', 'Pro', 'Founder's Edition')"),
+        price: z.string().describe("The exact price string from the input"),
+        description: z.string().describe("A 1-sentence description tailored to the specific target audience for this plan"),
+        features: z.array(z.string()).describe("3-4 specific features or benefits included in this plan"),
+      })
+    )
+    .describe("Specific pricing plans matching the input price and target audience pairs"),
   callToAction: z
     .string()
     .describe(
@@ -151,8 +161,8 @@ function buildPrompt(page: {
   productName: string;
   productDescription: string;
   keyFeatures: string[];
-  targetAudience: string;
-  price: string;
+  targetAudience: string[];
+  price: string[];
   uniqueSellingPoints?: string;
 }): string {
   return `You are an expert copywriter and marketing strategist. Generate a complete, persuasive sales page for the following product/service.
@@ -161,8 +171,8 @@ PRODUCT DETAILS:
 - Name: ${page.productName}
 - Description: ${page.productDescription}
 - Key Features: ${page.keyFeatures.join(", ")}
-- Target Audience: ${page.targetAudience}
-- Price: ${page.price}
+- Target Audience: ${page.targetAudience.join(", ")}
+- Pricing: ${page.price.join(", ")}
 ${page.uniqueSellingPoints ? `- Unique Selling Points: ${page.uniqueSellingPoints}` : ""}
 
 GUIDELINES:
@@ -172,7 +182,8 @@ GUIDELINES:
 - Each benefit should emphasize transformation and outcome, not just features
 - The call-to-action should create urgency without being pushy
 - The social proof should sound authentic and relatable
-- The pricing display should frame value, not just state a number
+- For PRICING PLANS: Generate exactly ONE plan for each pair of Target Audience and Price provided above. The plan 'name' should be creative but clear, and the 'description' must specifically mention how it solves the needs of that specific target audience.
+- The pricingDisplay should be a high-level hook for the section, not just stating the prices.
 - Use professional, persuasive tone throughout`;
 }
 
@@ -181,8 +192,8 @@ function buildSectionPrompt(
     productName: string;
     productDescription: string;
     keyFeatures: string[];
-    targetAudience: string;
-    price: string;
+    targetAudience: string[];
+    price: string[];
     uniqueSellingPoints?: string;
     generatedContent: {
       headline: string;
@@ -201,8 +212,8 @@ function buildSectionPrompt(
 
 PRODUCT: ${page.productName}
 DESCRIPTION: ${page.productDescription}
-TARGET AUDIENCE: ${page.targetAudience}
-PRICE: ${page.price}
+TARGET AUDIENCE: ${page.targetAudience.join(", ")}
+PRICE: ${page.price.join(", ")}
 KEY FEATURES: ${page.keyFeatures.join(", ")}
 ${page.uniqueSellingPoints ? `USPs: ${page.uniqueSellingPoints}` : ""}
 
@@ -232,6 +243,16 @@ function getSectionSchema(section: string): z.ZodObject<Record<string, z.ZodType
     }),
     socialProof: z.object({ socialProof: z.string() }),
     pricingDisplay: z.object({ pricingDisplay: z.string() }),
+    pricingPlans: z.object({
+      pricingPlans: z.array(
+        z.object({
+          name: z.string(),
+          price: z.string(),
+          description: z.string(),
+          features: z.array(z.string()),
+        }),
+      ),
+    }),
     callToAction: z.object({ callToAction: z.string() }),
   };
 

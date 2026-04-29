@@ -6,6 +6,7 @@ import { useEffect } from "react";
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useConvexAuth();
+  console.log(isAuthenticated, isLoading, "test");
   useEffect(() => {
     if (isAuthenticated) {
       redirect("/sales-pages");

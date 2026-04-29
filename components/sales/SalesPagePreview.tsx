@@ -8,6 +8,12 @@ interface GeneratedContent {
   features: Array<{ title: string; description: string }>;
   socialProof: string;
   pricingDisplay: string;
+  pricingPlans: Array<{
+    name: string;
+    price: string;
+    description: string;
+    features: string[];
+  }>;
   callToAction: string;
 }
 
@@ -15,7 +21,8 @@ interface SalesPagePreviewProps {
   content: GeneratedContent;
   templateStyle: string;
   productName: string;
-  price: string;
+  price: string[];
+  targetAudience: string[];
 }
 
 export default function SalesPagePreview({
@@ -23,6 +30,7 @@ export default function SalesPagePreview({
   templateStyle,
   productName,
   price,
+  targetAudience,
 }: SalesPagePreviewProps) {
   const styles = getTemplateStyles(templateStyle);
 
@@ -83,8 +91,35 @@ export default function SalesPagePreview({
       <section className={styles.section}>
         <div className={styles.pricingWrapper}>
           <h2 className={styles.sectionTitle}>Invest in Your Success</h2>
-          <p className={styles.pricing}>{content.pricingDisplay}</p>
-          <p className={styles.priceTag}>{price}</p>
+          <p className={styles.pricingIntro}>{content.pricingDisplay}</p>
+
+          <div className={`mt-12 grid gap-8 max-w-6xl mx-auto ${content.pricingPlans.length > 1 && content.pricingPlans.length % 2 === 0 ? "grid-cols-2" : content.pricingPlans.length > 1 && content.pricingPlans.length % 3 === 0 ? "grid-cols-3" : "grid-cols-1"}`}>
+            {content.pricingPlans?.map((plan, i) => (
+              <div key={i} className={styles.pricingCard}>
+                <div className="mb-6">
+                  <h3 className={styles.planName}>{plan.name}</h3>
+                  <p className={styles.planTarget}>{targetAudience[i]}</p>
+                </div>
+
+                <div className="mb-6">
+                  <span className={styles.planPrice}>{plan.price}</span>
+                </div>
+
+                <p className={styles.planDesc}>{plan.description}</p>
+
+                <div className="mt-8 space-y-3 mb-10">
+                  {plan.features.map((feature, j) => (
+                    <div key={j} className="flex items-start gap-3">
+                      <span className={styles.checkIcon}>✓</span>
+                      <span className={styles.featureText}>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button className={styles.planButton}>Get Started</button>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -132,12 +167,17 @@ function getTemplateStyles(template: string) {
         quoteIcon: "text-5xl text-neutral-600 font-serif",
         quote:
           "text-lg text-neutral-300 italic mt-4 leading-relaxed",
-        pricingWrapper: "text-center",
-        pricing: "text-lg text-neutral-300 mt-4 max-w-xl mx-auto",
-        priceTag:
-          "text-5xl font-bold mt-6 text-white",
-        finalCta:
-          "py-24 px-6 text-center bg-[#0c0c0c]",
+        pricingWrapper: "max-w-6xl mx-auto",
+        pricingIntro: "text-lg text-neutral-400 mt-4 text-center max-w-2xl mx-auto",
+        pricingCard: "p-8 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col hover:border-neutral-700 transition-all duration-300",
+        planName: "text-sm font-bold tracking-widest uppercase text-white",
+        planTarget: "text-xs text-neutral-500 mt-1",
+        planPrice: "text-4xl font-bold text-white",
+        planDesc: "text-sm text-neutral-400 leading-relaxed",
+        checkIcon: "text-white text-sm mt-0.5",
+        featureText: "text-sm text-neutral-300",
+        planButton: "mt-auto w-full py-3 rounded-lg bg-white text-black font-semibold text-sm hover:bg-neutral-200 transition-colors border-0",
+        finalCta: "py-24 px-6 text-center bg-[#0c0c0c]",
         finalCtaTitle: "text-3xl font-bold tracking-tight mb-8 text-white",
       };
 
@@ -170,10 +210,16 @@ function getTemplateStyles(template: string) {
         quoteIcon:
           "text-6xl bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent font-serif",
         quote: "text-xl text-violet-100/80 italic mt-4 leading-relaxed",
-        pricingWrapper: "text-center",
-        pricing: "text-lg text-violet-100/70 mt-4 max-w-xl mx-auto",
-        priceTag:
-          "text-6xl font-black mt-6 bg-gradient-to-r from-violet-300 to-pink-300 bg-clip-text text-transparent",
+        pricingWrapper: "max-w-6xl mx-auto",
+        pricingIntro: "text-lg text-violet-200/60 mt-4 text-center max-w-2xl mx-auto",
+        pricingCard: "p-8 rounded-3xl bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/20 flex flex-col hover:border-violet-500/40 transition-all duration-300 relative overflow-hidden",
+        planName: "text-lg font-black tracking-tight text-white",
+        planTarget: "text-xs text-violet-300/50 uppercase tracking-widest mt-1",
+        planPrice: "text-5xl font-black bg-gradient-to-r from-violet-300 to-pink-300 bg-clip-text text-transparent",
+        planDesc: "text-sm text-violet-100/70 leading-relaxed",
+        checkIcon: "text-pink-400 text-sm mt-0.5 font-bold",
+        featureText: "text-sm text-violet-100/80",
+        planButton: "mt-auto w-full py-4 rounded-xl bg-gradient-to-r from-violet-500 to-pink-500 text-white font-bold text-sm shadow-xl shadow-violet-500/20 hover:shadow-violet-500/40 hover:-translate-y-0.5 transition-all border-0",
         finalCta:
           "py-28 px-6 text-center bg-gradient-to-t from-violet-950/30 to-transparent",
         finalCtaTitle:
@@ -209,10 +255,16 @@ function getTemplateStyles(template: string) {
           "max-w-3xl mx-auto text-center py-12 border-t border-b border-amber-500/10",
         quoteIcon: "text-5xl text-amber-500/40 font-serif",
         quote: "text-lg text-neutral-300 italic mt-4 leading-relaxed",
-        pricingWrapper: "text-center",
-        pricing: "text-lg text-neutral-300 mt-4 max-w-xl mx-auto",
-        priceTag:
-          "text-5xl font-bold mt-6 bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent",
+        pricingWrapper: "max-w-6xl mx-auto",
+        pricingIntro: "text-lg text-neutral-400 mt-4 text-center max-w-2xl mx-auto font-serif",
+        pricingCard: "p-8 rounded-2xl bg-neutral-900/50 border border-amber-500/10 flex flex-col hover:border-amber-500/30 transition-all duration-300",
+        planName: "text-lg font-bold font-serif text-amber-100",
+        planTarget: "text-xs text-neutral-500 mt-1",
+        planPrice: "text-5xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent",
+        planDesc: "text-sm text-neutral-400 leading-relaxed",
+        checkIcon: "text-amber-500 text-sm mt-0.5",
+        featureText: "text-sm text-neutral-300",
+        planButton: "mt-auto w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold text-sm shadow-lg shadow-amber-500/10 hover:shadow-amber-500/30 transition-all border-0",
         finalCta:
           "py-24 px-6 text-center bg-gradient-to-t from-amber-950/10 to-transparent",
         finalCtaTitle:
