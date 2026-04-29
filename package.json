@@ -1,6 +1,6 @@
 {
-  "name": "example-next",
-  "version": "0.1.0",
+  "name": "sales-craft-ai",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
