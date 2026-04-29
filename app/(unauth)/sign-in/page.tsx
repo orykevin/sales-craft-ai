@@ -1,7 +1,6 @@
 "use client";
 
 import SignIn from "@/app/(unauth)/sign-in/SignIn";
-import Link from "next/link";
 
 export default function SignInPage() {
   return (

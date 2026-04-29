@@ -10,7 +10,6 @@ import {
   LogOut,
   Sparkles,
   Menu,
-  X,
 } from "lucide-react";
 
 const navItems = [

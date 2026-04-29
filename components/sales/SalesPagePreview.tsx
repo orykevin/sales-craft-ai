@@ -29,7 +29,6 @@ export default function SalesPagePreview({
   content,
   templateStyle,
   productName,
-  price,
   targetAudience,
 }: SalesPagePreviewProps) {
   const styles = getTemplateStyles(templateStyle);

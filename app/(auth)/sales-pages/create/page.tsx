@@ -5,7 +5,6 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  Sparkles,
   Loader2,
   Plus,
   X,
