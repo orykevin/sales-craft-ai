@@ -487,16 +487,16 @@ function SectionEditor({
                   <div key={j} className="flex gap-2">
                     <input
                       value={f}
-                      onChange={(e) => onChange(value.map((p, idx) => idx === i ? {
+                      onChange={(e) => onChange(value.map((p: any, idx: number) => idx === i ? {
                         ...p,
-                        features: p.features.map((feat, fidx) => fidx === j ? e.target.value : feat)
+                        features: p.features.map((feat: string, fidx: number) => fidx === j ? e.target.value : feat)
                       } : p))}
                       className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs focus:border-amber-500/50 outline-none transition-all"
                     />
                     <button
-                      onClick={() => onChange(value.map((p, idx) => idx === i ? {
+                      onClick={() => onChange(value.map((p: any, idx: number) => idx === i ? {
                         ...p,
-                        features: p.features.filter((_, fidx) => fidx !== j)
+                        features: p.features.filter((_: any, fidx: number) => fidx !== j)
                       } : p))}
                       className="p-1.5 text-neutral-500 hover:text-red-400"
                     >
@@ -505,7 +505,7 @@ function SectionEditor({
                   </div>
                 ))}
                 <button
-                  onClick={() => onChange(value.map((p, idx) => idx === i ? {
+                  onClick={() => onChange(value.map((p: any, idx: number) => idx === i ? {
                     ...p,
                     features: [...p.features, ""]
                   } : p))}

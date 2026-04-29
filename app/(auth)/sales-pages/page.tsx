@@ -16,7 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import { Id, Doc } from "@/convex/_generated/dataModel";
 
 export default function SalesPages() {
   const pages = useQuery(api.salesPages.list);
@@ -206,22 +206,9 @@ export default function SalesPages() {
 // HTML export helper
 // ---------------------------------------------------------------------------
 
-function generateExportHTML(page: {
-  productName: string;
-  price: string[];
-  targetAudience: string[];
-  generatedContent: {
-    headline: string;
-    subHeadline: string;
-    productDescription: string;
-    benefits: Array<{ title: string; description: string }>;
-    features: Array<{ title: string; description: string }>;
-    socialProof: string;
-    pricingDisplay: string;
-    callToAction: string;
-  };
-}): string {
+function generateExportHTML(page: Doc<"salesPages">): string {
   const c = page.generatedContent;
+  if (!c) return "";
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
